@@ -1,0 +1,21 @@
+{
+	"name": "chat_realtime",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "npm install --legacy-peer-deps --prefix ./frontend && npm install --legacy-peer-deps --prefix ./backend && npm run build --prefix ./frontend"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/aRc-rAy/First-Chat.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/aRc-rAy/First-Chat/issues"
+	},
+	"homepage": "https://github.com/aRc-rAy/First-Chat#readme"
+}
