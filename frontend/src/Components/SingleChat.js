@@ -269,14 +269,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 									onChange={typingHandler}
 									value={newMessage}
 									border={"1px solid gray"}
-									width={"85%"}
+									width={"80%"}
 								/>
 								<Button
 									width={"fitContent"}
 									colorScheme="teal"
 									onClick={handleSend}
+									marginLeft={2}
 								>
-									Send
+									PUSH
 								</Button>
 							</Box>
 						</FormControl>
