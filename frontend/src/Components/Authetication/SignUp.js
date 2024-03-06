@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import * as api from "../../API/index.js";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
 	const [show, setShow] = useState(false);
@@ -20,6 +21,7 @@ const SignUp = () => {
 	const [pic, setPic] = useState("");
 	const [loading, setloading] = useState(false);
 	const toast = useToast();
+	const navigate = useNavigate();
 
 	const handleClick = (prev) => {
 		setShow(1 - show);
@@ -119,6 +121,7 @@ const SignUp = () => {
 				position: "bottom",
 			});
 			localStorage.setItem("userInfo", JSON.stringify(data));
+			navigate("/chat");
 			console.log(data);
 		} catch (error) {
 			toast({
