@@ -10,12 +10,7 @@ import {
 	Text,
 	useToast,
 } from "@chakra-ui/react";
-import {
-	ArrowBackIcon,
-	ArrowRightIcon,
-	ChatIcon,
-	ChevronRightIcon,
-} from "@chakra-ui/icons";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../Config/getSender";
 import ProfileModel from "./ProfileModel";
 import UpdateGroupChatModel from "./UpdateGroupChatModel";
@@ -281,13 +276,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 									colorScheme="teal"
 									onClick={handleSend}
 								>
-									<IconButton
-										display={{ base: "flex", md: "flex" }}
-										icon={<ArrowRightIcon />}
-										fontSize={"sm"}
-										colorScheme="teal"
-										onClick={handleSend}
-									/>
+									Send
 								</Button>
 							</Box>
 						</FormControl>
