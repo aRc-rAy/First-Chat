@@ -1,0 +1,20 @@
+# dependencies
+/frontend/node_modules
+/frontend/.gitignore
+/frontend/README.md
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/frontend/build
+
+# misc
+/frontend/.env
+
+# backend
+/backend/build
+/backend/.env
+/backend/node_modules
