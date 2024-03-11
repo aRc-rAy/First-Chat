@@ -26,7 +26,7 @@ It utilizes:
 - Node.js: A JavaScript runtime environment that allows server-side execution.
 - Socket.io: A library for enabling real-time communication via WebSockets.
 
-##Features
+## Features
 
 - User Authentication:
   1. Implement user registration and login functionality.
