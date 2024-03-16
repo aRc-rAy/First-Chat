@@ -1,0 +1,11 @@
+name: "Basic workflow"
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-lates
+
+    steps:
+      - run: echo `🌀 Test run successfully.`
+      - run: echo `The status of this job is ${{job.status}}`

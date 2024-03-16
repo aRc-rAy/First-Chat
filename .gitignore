@@ -18,3 +18,9 @@
 /backend/build
 /backend/.env
 /backend/node_modules
+
+# dev-support
+.github/temp.txt
+
+# Docker
+Dockerfile
