@@ -24,3 +24,6 @@
 
 # Docker
 Dockerfile
+
+# Docker-compose
+docker-compose.yml
