@@ -1,8 +1,10 @@
 # First-Chat
 
-#### Deployed link : [First Chat](https://first-chat-1.onrender.com/)
-
 **Full-Stack Chat App**
+
+#### Deployed link : [First Chat](https://first-chat-1.onrender.com/)
+#### API documentation : [First Chat](https://documenter.getpostman.com/view/17664456/2sA2xnxpvG)
+#### Docker Images : [Frontend](https://hub.docker.com/r/dilip8840/chat_realtime-frontend) [Backend](https://hub.docker.com/r/dilip8840/chat_realtime-backend)
 
 Overview
 
