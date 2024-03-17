@@ -24,6 +24,7 @@
 
 # Docker
 Dockerfile
+.dockerignore
 
 # Docker-compose
 docker-compose.yml
