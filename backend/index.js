@@ -1,88 +1,100 @@
-const express = require("express");
-const app = express();
-const cors = require("cors");
-const { getMinutes, modifyJsonObject } = require("./Functions/getKeyString.js");
-const excelToJson = require("convert-excel-to-json");
-const path = require("path");
-const dotenv = require("dotenv");
-const result = require("./port_geo_location.json");
+import express from "express";
+import dotenv from "dotenv";
+import { chats } from "./Data/data.js";
+import cors from "cors";
+import mongoose from "mongoose";
+import path from "path";
 
 dotenv.config();
+// ........................................<Routes>............................................ //
+import userRoutes from "./Routes/routes_user.js";
+import chatRoutes from "./Routes/routes_chat.js";
+import messageRoutes from "./Routes/routes_message.js";
+import { errorhandler, notFound } from "./middlewares/middleware_error.js";
+import { Server } from "socket.io";
+
+const app = express();
+const PORT = process.env.PORT || 4005;
+
 app.use(cors());
+app.use(express.json()); //to accept json data
 
-result.forEach((port) => {
-	port["portname"] = port["port_name"];
-	port["latitude"] = port["geo_location_latitude"];
-	port["longitude"] = port["geo_location_longitude"];
-	delete port["port_name"];
-	delete port["geo_location_latitude"];
-	delete port["geo_location_longitude"];
-});
+app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/message", messageRoutes);
 
-const ships = excelToJson({
-	sourceFile: "./geo_stats_data_7_days.xlsx",
-	columnToKey: {
-		A: "ship_name",
-		B: "latitude",
-		C: "longitude",
-		D: "heading",
-		E: "timestamp",
-	},
-});
+// app.use(notFound);
+// app.use(errorhandler);
 
-const convertDateToMinutes = (value) =>
-	Math.floor(
-		(new Date(value).getTime() - new Date("2024-04-28 19:38:00.000 +0530")) /
-			(60 * 1000)
-	);
-
-const modifiedJson = modifyJsonObject(
-	ships,
-	"timestamp",
-	"minutes",
-	convertDateToMinutes
-);
-
-console.log(modifiedJson);
-
-// -============== Deploy ======================
-let __dirname1 = path.resolve();
-
-let pathSegments = path.dirname(__dirname1).split(path.sep);
-__dirname1 = path.join(...pathSegments);
+// ------------------------------------Deployment-----------------------------------------//
+const dirname1 = path.resolve();
+const pathArray = dirname1.split("\\");
+pathArray.pop();
+const newDirName = path.join(...pathArray);
 
 if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname1, "client", "build")));
-
+	app.use(express.static(path.join(newDirName, "frontend", "build")));
 	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname1, "client", "build", "index.html"));
+		res.sendFile(path.resolve(newDirName, "frontend", "build", "index.html"));
 	});
-
-	console.log("app is running");
 } else {
-	app.get("*", "Things going out of hand...Please wait");
-}
-
-// =============== Deploy -=====================
-
-app.get("/shipdata", (req, res) => {
-	const currentDate = new Date();
-	const minute = getMinutes(currentDate);
-	const array = [];
-
-	modifiedJson.geo_stats.forEach((element) => {
-		if (element.minutes === minute) {
-			array.push(element);
-		}
+	app.get("/", (req, res) => {
+		res.send("API is running successfully...");
 	});
+}
+// -----------------------------------------------------------------------------//
 
-	res.status(200).json({ result: array });
-});
+const connection_URL = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.wjuobw5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-app.get("/portdata", (req, res) => {
-	res.status(200).json(result);
-});
+mongoose
+	.connect(connection_URL)
+	.then((res) => {
+		console.log(`😎 Database is connected `);
 
-app.listen(5000, () => {
-	console.log("Server is running 😍😎");
-});
+		const server = app.listen(PORT, () => {
+			console.log(`🎇 Server is running on ${PORT} `);
+		});
+
+		const io = new Server(server, {
+			pingTimeout: 60000,
+			cors: {
+				origin: "http://localhost:3000",
+			},
+		});
+
+		io.on("connection", (socket) => {
+			console.log("Connected using socket.io");
+
+			socket.on("setup", (userData) => {
+				const val = socket.join(userData._id);
+				socket.emit(`connected`);
+			});
+
+			socket.on("join chat", (room) => {
+				socket.join(room);
+			});
+
+			socket.on("typing", (room) => socket.in(room).emit("typing"));
+			socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+			socket.on("new message", (newMessageReceived) => {
+				let chat = newMessageReceived.chat;
+				if (!chat.users) return console.log(`chat users not defined`);
+
+				chat.users.forEach((user) => {
+					if (user._id == newMessageReceived._id) return;
+					socket.in(user._id).emit("message received", newMessageReceived);
+				});
+			});
+
+			socket.off("setup", () => {
+				console.log("USER DISCONNECTED");
+				socket.leave(userData._id);
+			});
+		});
+	})
+	.catch((err) => {
+		console.log(`Error while connecting`);
+		console.log(`One reason may be You are not connected to Internet`);
+		console.log(err.message);
+	});
